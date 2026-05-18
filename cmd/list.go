@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
 	"github.com/duyanh-y4n/dpod-seed/internal/registry"
 )
 
@@ -20,7 +21,12 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List available verified distros from the upstream registry",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := registry.NewClient(registryURL, http.DefaultClient)
+		url := registryURL
+		if !cmd.Flags().Changed("registry") {
+			hc, _ := hostconfig.Load(hostconfig.DefaultPath())
+			url = or(hc.RegistryURL, defaultRegistryURL)
+		}
+		client := registry.NewClient(url, http.DefaultClient)
 		return runList(os.Stdout, client)
 	},
 }

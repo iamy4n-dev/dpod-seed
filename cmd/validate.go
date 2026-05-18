@@ -11,6 +11,7 @@ import (
 
 	"github.com/duyanh-y4n/dpod-seed/internal/config"
 	"github.com/duyanh-y4n/dpod-seed/internal/fetch"
+	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
 	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
 )
 
@@ -18,10 +19,11 @@ var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Resolve dpod.yaml without writing files — suitable for CI",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		hc, _ := hostconfig.Load(hostconfig.DefaultPath())
 		repos := resolver.RepoConfig{
-			DistroRepo:       defaultDistroRepo,
-			DevcontainerRepo: defaultDevcontainerRepo,
-			PackagesRepo:     defaultPackagesRepo,
+			DistroRepo:       or(hc.Repos.Distro, defaultDistroRepo),
+			DevcontainerRepo: or(hc.Repos.Devcontainer, defaultDevcontainerRepo),
+			PackagesRepo:     or(hc.Repos.Packages, defaultPackagesRepo),
 		}
 		f := fetch.NewGitHubFetcher("", http.DefaultClient)
 		r := resolver.NewResolver(f, repos)
