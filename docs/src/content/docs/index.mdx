@@ -1,0 +1,86 @@
+---
+title: Getting Started
+description: Install dpod-seed and bootstrap your first reproducible DevPod environment in minutes.
+draft: false
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+`dpod-seed` is a CLI for managing reproducible DevPod environments from verified upstream distros.
+
+You declare which environment you want in `dpod.yaml`; `dpod-seed` materialises the correct devcontainer files, records what it wrote in `dpod.lock`, and keeps everything in sync as the distro evolves.
+
+## Install
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/duyanh-y4n/dpod-seed/master/install.sh | sh
+```
+
+To install a specific version:
+
+```sh
+VERSION=v0.1.0 curl -fsSL https://raw.githubusercontent.com/duyanh-y4n/dpod-seed/master/install.sh | sh
+```
+
+Binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64` are attached to every [GitHub Release](https://github.com/duyanh-y4n/dpod-seed/releases).
+
+### Devcontainer feature
+
+`dpod-seed` is available as a devcontainer feature so it is pre-installed inside any devpod without a manual install step:
+
+```jsonc
+// .devcontainer/devcontainer.json
+{
+  "features": {
+    "ghcr.io/duyanh-y4n/devcontainer/dpod-seed:1": {}
+  }
+}
+```
+
+Pin a specific version:
+
+```jsonc
+{
+  "features": {
+    "ghcr.io/duyanh-y4n/devcontainer/dpod-seed:1": { "version": "v0.1.0" }
+  }
+}
+```
+
+## Quick start
+
+```sh
+# 1. Browse available distros
+dpod-seed list
+
+# 2. Bootstrap a project interactively
+cd my-project
+dpod-seed init
+
+# 3. Re-sync after editing dpod.yaml (e.g. upgrading the tag)
+dpod-seed sync
+
+# 4. Validate in CI (non-interactive, no writes)
+dpod-seed validate
+```
+
+## What's next
+
+<CardGrid>
+  <Card title="Using dpod-seed" icon="rocket">
+    Learn the full init → sync → validate → eject workflow.
+    [Read the guide](/dpod-seed/guides/using-dpod-seed/)
+  </Card>
+  <Card title="Writing a distro" icon="puzzle">
+    Contribute a new distro to the upstream registry.
+    [Read the guide](/dpod-seed/guides/writing-a-distro/)
+  </Card>
+  <Card title="Self-hosting" icon="setting">
+    Point dpod-seed at your own private fork.
+    [Read the guide](/dpod-seed/guides/self-hosting/)
+  </Card>
+  <Card title="CLI reference" icon="list-format">
+    All commands, flags, and exit codes.
+    [Read the reference](/dpod-seed/reference/cli-commands/)
+  </Card>
+</CardGrid>
