@@ -223,6 +223,25 @@ func TestResolve_overridesRemove(t *testing.T) {
 	}
 }
 
+func TestResolve_missingDistroYAML(t *testing.T) {
+	f := &mockFetcher{
+		responses: map[string][]fetch.File{
+			// fetcher succeeds but returns no distro.yaml
+			"github.com/org/distros@v1.0.0:distros/myos": {
+				{Path: "README.md", Content: []byte("# myos")},
+			},
+		},
+	}
+	r := resolver.NewResolver(f, repos)
+	_, err := r.Resolve("myos", "v1.0.0", config.Overrides{})
+	if err == nil {
+		t.Fatal("expected error when distro.yaml is absent from fetched files")
+	}
+	if !strings.Contains(err.Error(), "distro.yaml") {
+		t.Errorf("error should mention distro.yaml, got: %v", err)
+	}
+}
+
 func TestResolve_unknownDistro(t *testing.T) {
 	f := &mockFetcher{
 		errors: map[string]error{

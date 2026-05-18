@@ -86,6 +86,39 @@ func TestFetch_directoryRecursive(t *testing.T) {
 	}
 }
 
+func TestFetch_singleFileDirectPath(t *testing.T) {
+	var srv *httptest.Server
+	srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/repos/org/repo/contents/profiles/arch-base/devcontainer.json":
+			// GitHub returns a single JSON object (not an array) for a direct file path
+			entry := ghEntry{
+				Type:        "file",
+				Path:        "profiles/arch-base/devcontainer.json",
+				DownloadURL: srv.URL + "/raw/devcontainer.json",
+			}
+			json.NewEncoder(w).Encode(entry)
+		case "/raw/devcontainer.json":
+			fmt.Fprint(w, `{"image":"base"}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer srv.Close()
+
+	f := fetch.NewGitHubFetcher(srv.URL, srv.Client())
+	files, err := f.Fetch("github.com/org/repo", "abc123", "profiles/arch-base/devcontainer.json")
+	if err != nil {
+		t.Fatalf("Fetch: %v", err)
+	}
+	if len(files) != 1 {
+		t.Fatalf("files count = %d, want 1", len(files))
+	}
+	if string(files[0].Content) != `{"image":"base"}` {
+		t.Errorf("content = %q", string(files[0].Content))
+	}
+}
+
 func TestFetch_non200(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found", http.StatusNotFound)

@@ -60,6 +60,22 @@ func TestRunEject_noLockReturnsError(t *testing.T) {
 	}
 }
 
+func TestRunEject_emptyInputAborts(t *testing.T) {
+	dir := t.TempDir()
+	lockPath := filepath.Join(dir, "dpod.lock")
+	if err := os.WriteFile(lockPath, []byte("files: []"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	if err := runEject(lockPath, strings.NewReader("\n"), &out); err != nil {
+		t.Fatalf("runEject: %v", err)
+	}
+	if _, err := os.Stat(lockPath); err != nil {
+		t.Error("dpod.lock should still exist when Enter pressed with no input")
+	}
+}
+
 func TestRunEject_promptText(t *testing.T) {
 	dir := t.TempDir()
 	lockPath := filepath.Join(dir, "dpod.lock")
