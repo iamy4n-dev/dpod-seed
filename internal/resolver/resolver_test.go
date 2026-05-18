@@ -223,6 +223,45 @@ func TestResolve_overridesRemove(t *testing.T) {
 	}
 }
 
+func TestResolve_manifestYamlOverridesDest(t *testing.T) {
+	f := &mockFetcher{
+		responses: map[string][]fetch.File{
+			"github.com/org/distros@v1.0.0:distros/myos": {
+				{Path: "distro.yaml", Content: []byte("devcontainer: arch-base@v2.0.0\npackages:\n  - shell-zsh@v1.3.0\n")},
+			},
+			"github.com/org/devcontainer@v2.0.0:profiles/arch-base": {},
+			"github.com/org/packages@v1.3.0:packages/shell-zsh": {
+				{Path: "manifest.yaml", Content: []byte("files:\n  - src: dotfiles/.zshrc\n    dest: home/.zshrc\n")},
+				{Path: "dotfiles/.zshrc", Content: []byte("zsh config")},
+			},
+		},
+	}
+
+	r := resolver.NewResolver(f, repos)
+	entries, err := r.Resolve("myos", "v1.0.0", config.Overrides{})
+	if err != nil {
+		t.Fatalf("Resolve: %v", err)
+	}
+	// The manifest override should change dotfiles/.zshrc → home/.zshrc
+	// instead of the default .devcontainer/.zshrc
+	e := findEntry(entries, "home/.zshrc")
+	if e == nil {
+		t.Fatalf("expected entry at home/.zshrc (manifest override), got %v", entryPaths(entries))
+	}
+	// and the default-convention path should NOT appear
+	if findEntry(entries, ".devcontainer/.zshrc") != nil {
+		t.Error("default-convention path should be overridden by manifest.yaml")
+	}
+}
+
+func entryPaths(entries []resolver.ManifestEntry) []string {
+	paths := make([]string, len(entries))
+	for i, e := range entries {
+		paths[i] = e.DestPath
+	}
+	return paths
+}
+
 func TestResolve_missingDistroYAML(t *testing.T) {
 	f := &mockFetcher{
 		responses: map[string][]fetch.File{

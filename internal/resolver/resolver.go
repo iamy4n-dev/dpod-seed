@@ -117,17 +117,43 @@ func (r *resolverImpl) resolveDevcontainer(pin string) ([]ManifestEntry, error) 
 	return entries, nil
 }
 
+type packageManifest struct {
+	Files []struct {
+		Src  string `yaml:"src"`
+		Dest string `yaml:"dest"`
+	} `yaml:"files"`
+}
+
 func (r *resolverImpl) resolvePackage(name, sha string) ([]ManifestEntry, error) {
 	files, err := r.fetcher.Fetch(r.repos.PackagesRepo, sha, "packages/"+name)
 	if err != nil {
 		return nil, fmt.Errorf("fetch package %q@%s: %w", name, sha, err)
 	}
+
+	// Build override map from manifest.yaml if present
+	overrides := map[string]string{}
+	for _, f := range files {
+		if f.Path == "manifest.yaml" {
+			var pm packageManifest
+			if err := yaml.Unmarshal(f.Content, &pm); err == nil {
+				for _, rule := range pm.Files {
+					overrides[rule.Src] = rule.Dest
+				}
+			}
+		}
+	}
+
 	entries := make([]ManifestEntry, 0, len(files))
 	for _, f := range files {
 		if f.Path == "manifest.yaml" {
 			continue
 		}
-		dest := applyPlacement(f.Path)
+		var dest string
+		if d, ok := overrides[f.Path]; ok {
+			dest = d
+		} else {
+			dest = applyPlacement(f.Path)
+		}
 		entries = append(entries, ManifestEntry{
 			DestPath: dest,
 			SrcRepo:  r.repos.PackagesRepo,
