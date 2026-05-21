@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/lock"
+	"github.com/iamy4n-dev/dpod-seed/internal/lock"
 )
 
 func TestRead_nonExistentFile(t *testing.T) {

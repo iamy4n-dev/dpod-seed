@@ -1,6 +1,6 @@
 package main
 
-import "github.com/duyanh-y4n/dpod-seed/cmd"
+import "github.com/iamy4n-dev/dpod-seed/cmd"
 
 func main() {
 	cmd.Execute()

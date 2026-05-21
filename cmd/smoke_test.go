@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/registry"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 // TestSmoke_InitSyncValidatePipeline exercises the full user-facing loop:

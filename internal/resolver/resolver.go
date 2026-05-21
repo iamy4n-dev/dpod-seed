@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/config"
-	"github.com/duyanh-y4n/dpod-seed/internal/fetch"
+	"github.com/iamy4n-dev/dpod-seed/internal/config"
+	"github.com/iamy4n-dev/dpod-seed/internal/fetch"
 )
 
 type RepoConfig struct {

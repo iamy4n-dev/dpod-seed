@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/lock"
-	"github.com/duyanh-y4n/dpod-seed/internal/patchapplier"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/lock"
+	"github.com/iamy4n-dev/dpod-seed/internal/patchapplier"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 // Summary reports how many files were written and removed.

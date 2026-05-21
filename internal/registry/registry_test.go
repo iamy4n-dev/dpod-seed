@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/registry"
 )
 
 const validRegistry = `

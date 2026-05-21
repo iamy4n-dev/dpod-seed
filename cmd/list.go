@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
-	"github.com/duyanh-y4n/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/hostconfig"
+	"github.com/iamy4n-dev/dpod-seed/internal/registry"
 )
 
 const defaultRegistryURL = "https://raw.githubusercontent.com/duyanh-y4n/distros/main/registry.yaml"

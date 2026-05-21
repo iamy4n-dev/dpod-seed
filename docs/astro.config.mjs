@@ -9,7 +9,7 @@ export default defineConfig({
       title: 'dpod-seed',
       description: 'CLI for managing reproducible DevPod environments from verified upstream distros.',
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/duyanh-y4n/dpod-seed' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/iamy4n-dev/dpod-seed' },
       ],
       sidebar: [
         { label: 'Getting Started', link: '/' },

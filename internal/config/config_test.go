@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/config"
+	"github.com/iamy4n-dev/dpod-seed/internal/config"
 )
 
 func TestRead_valid(t *testing.T) {

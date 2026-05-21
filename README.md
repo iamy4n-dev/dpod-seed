@@ -19,4 +19,4 @@ dpod-seed sync    # re-sync after editing dpod.yaml
 dpod-seed validate  # verify in CI
 ```
 
-Binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64` are attached to every [GitHub Release](https://github.com/duyanh-y4n/dpod-seed/releases).
+Binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64` are attached to every [GitHub Release](https://github.com/iamy4n-dev/dpod-seed/releases).

@@ -12,11 +12,11 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/config"
-	"github.com/duyanh-y4n/dpod-seed/internal/fetch"
-	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
-	"github.com/duyanh-y4n/dpod-seed/internal/registry"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/config"
+	"github.com/iamy4n-dev/dpod-seed/internal/fetch"
+	"github.com/iamy4n-dev/dpod-seed/internal/hostconfig"
+	"github.com/iamy4n-dev/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 var initCmd = &cobra.Command{

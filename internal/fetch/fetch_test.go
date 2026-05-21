@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/fetch"
+	"github.com/iamy4n-dev/dpod-seed/internal/fetch"
 )
 
 type ghEntry struct {

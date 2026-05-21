@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/lock"
-	"github.com/duyanh-y4n/dpod-seed/internal/materializer"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/lock"
+	"github.com/iamy4n-dev/dpod-seed/internal/materializer"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 func TestMaterialize_writesFileToDestPath(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
+	"github.com/iamy4n-dev/dpod-seed/internal/hostconfig"
 )
 
 func TestLoad_reposFromFile(t *testing.T) {

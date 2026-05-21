@@ -9,10 +9,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/config"
-	"github.com/duyanh-y4n/dpod-seed/internal/fetch"
-	"github.com/duyanh-y4n/dpod-seed/internal/hostconfig"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/config"
+	"github.com/iamy4n-dev/dpod-seed/internal/fetch"
+	"github.com/iamy4n-dev/dpod-seed/internal/hostconfig"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 var validateCmd = &cobra.Command{

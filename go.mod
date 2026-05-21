@@ -1,4 +1,4 @@
-module github.com/duyanh-y4n/dpod-seed
+module github.com/iamy4n-dev/dpod-seed
 
 go 1.26.3
 

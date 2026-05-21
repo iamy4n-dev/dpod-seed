@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/duyanh-y4n/dpod-seed/internal/registry"
-	"github.com/duyanh-y4n/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
 // twoDistros is a reusable registry client used across init tests.
