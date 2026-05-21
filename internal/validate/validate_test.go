@@ -219,6 +219,135 @@ func TestRun_noRecognisedLayout(t *testing.T) {
 	}
 }
 
+const validProfileReadme = `---
+name: "arch-base"
+display_name: "Arch Linux Base"
+description: "Arch Linux base devcontainer profile"
+status: stable
+tags: [arch, linux]
+---
+
+# arch-base
+`
+
+func TestProfileDir_valid(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "devcontainer.json"), `{"name": "arch-base"}`)
+	writeFile(t, filepath.Join(dir, "Dockerfile"), "FROM archlinux:latest\n")
+	writeFile(t, filepath.Join(dir, "README.md"), validProfileReadme)
+
+	errs := validate.ProfileDir(dir)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors, got: %v", errs)
+	}
+}
+
+func TestProfileDir_missingDevcontainerJSON(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "Dockerfile"), "FROM archlinux:latest\n")
+	writeFile(t, filepath.Join(dir, "README.md"), validProfileReadme)
+
+	errs := validate.ProfileDir(dir)
+	found := false
+	for _, e := range errs {
+		if strings.Contains(e, "devcontainer.json") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("expected error mentioning devcontainer.json, got: %v", errs)
+	}
+}
+
+func TestProfileDir_missingDockerfile(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "devcontainer.json"), `{"name": "arch-base"}`)
+	writeFile(t, filepath.Join(dir, "README.md"), validProfileReadme)
+
+	errs := validate.ProfileDir(dir)
+	found := false
+	for _, e := range errs {
+		if strings.Contains(e, "Dockerfile") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("expected error mentioning Dockerfile, got: %v", errs)
+	}
+}
+
+func TestProfileDir_missingDisplayName(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "devcontainer.json"), `{"name": "arch-base"}`)
+	writeFile(t, filepath.Join(dir, "Dockerfile"), "FROM archlinux:latest\n")
+	writeFile(t, filepath.Join(dir, "README.md"), `---
+name: "arch-base"
+display_name: ""
+description: "A profile"
+status: stable
+tags: [arch]
+---
+
+# arch-base
+`)
+
+	errs := validate.ProfileDir(dir)
+	found := false
+	for _, e := range errs {
+		if strings.Contains(e, "display_name") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("expected error mentioning display_name, got: %v", errs)
+	}
+}
+
+func TestProfileDir_emptyTags(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "devcontainer.json"), `{"name": "arch-base"}`)
+	writeFile(t, filepath.Join(dir, "Dockerfile"), "FROM archlinux:latest\n")
+	writeFile(t, filepath.Join(dir, "README.md"), `---
+name: "arch-base"
+display_name: "Arch Linux Base"
+description: "A profile"
+status: stable
+tags: []
+---
+
+# arch-base
+`)
+
+	errs := validate.ProfileDir(dir)
+	found := false
+	for _, e := range errs {
+		if strings.Contains(e, "tags") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("expected error mentioning tags, got: %v", errs)
+	}
+}
+
+func TestRun_profilesRepo(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "profiles", "arch-base")
+	writeFile(t, filepath.Join(dir, "devcontainer.json"), `{"name": "arch-base"}`)
+	writeFile(t, filepath.Join(dir, "Dockerfile"), "FROM archlinux:latest\n")
+	writeFile(t, filepath.Join(dir, "README.md"), validProfileReadme)
+
+	errs := validate.Run(base)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors for valid profiles repo, got: %v", errs)
+	}
+}
+
 func TestValidateDistroDir_valid(t *testing.T) {
 	base := t.TempDir()
 	dir := filepath.Join(base, "distros", "devops-k8s")
