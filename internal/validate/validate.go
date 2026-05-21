@@ -12,16 +12,18 @@ import (
 
 var pinRE = regexp.MustCompile(`^[a-zA-Z0-9_/.-]+@v\d+\.\d+\.\d+$`)
 
-// Run auto-detects whether root is a distros or packages repo and validates all entries.
+// Run auto-detects whether root is a distros, packages, or profiles repo and validates all entries.
 func Run(root string) []string {
 	distrosDir := filepath.Join(root, "distros")
 	packagesDir := filepath.Join(root, "packages")
+	profilesDir := filepath.Join(root, "profiles")
 
 	hasDistros := dirExists(distrosDir)
 	hasPackages := dirExists(packagesDir)
+	hasProfiles := dirExists(profilesDir)
 
-	if !hasDistros && !hasPackages {
-		return []string{fmt.Sprintf("%s: no distros/ or packages/ directory found", root)}
+	if !hasDistros && !hasPackages && !hasProfiles {
+		return []string{fmt.Sprintf("%s: no distros/, packages/, or profiles/ directory found", root)}
 	}
 
 	var errs []string
@@ -30,6 +32,9 @@ func Run(root string) []string {
 	}
 	if hasPackages {
 		errs = append(errs, walkAndValidate(packagesDir, PackageDir)...)
+	}
+	if hasProfiles {
+		errs = append(errs, walkAndValidate(profilesDir, ProfileDir)...)
 	}
 	return errs
 }
@@ -50,6 +55,62 @@ func walkAndValidate(root string, validate func(string) []string) []string {
 			continue
 		}
 		errs = append(errs, validate(filepath.Join(root, e.Name()))...)
+	}
+	return errs
+}
+
+type profileFrontmatter struct {
+	Name        string   `yaml:"name"`
+	DisplayName string   `yaml:"display_name"`
+	Description string   `yaml:"description"`
+	Status      string   `yaml:"status"`
+	Tags        []string `yaml:"tags"`
+}
+
+// ProfileDir validates a single profile directory (devcontainer.json + Dockerfile + README.md).
+func ProfileDir(dir string) []string {
+	var errs []string
+	errs = append(errs, checkFileExists(filepath.Join(dir, "devcontainer.json"))...)
+	errs = append(errs, checkFileExists(filepath.Join(dir, "Dockerfile"))...)
+	errs = append(errs, validateProfileReadme(filepath.Join(dir, "README.md"))...)
+	return errs
+}
+
+func checkFileExists(path string) []string {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return []string{fmt.Sprintf("%s: file not found", path)}
+	}
+	return nil
+}
+
+func validateProfileReadme(path string) []string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return []string{fmt.Sprintf("%s: cannot read file: %v", path, err)}
+	}
+	block, err := parseFrontmatterRaw(data)
+	if err != nil {
+		return []string{fmt.Sprintf("%s: %v", path, err)}
+	}
+	var fm profileFrontmatter
+	if err := yaml.Unmarshal([]byte(block), &fm); err != nil {
+		return []string{fmt.Sprintf("%s: invalid frontmatter YAML: %v", path, err)}
+	}
+	var errs []string
+	if strings.TrimSpace(fm.Name) == "" {
+		errs = append(errs, fmt.Sprintf("%s: frontmatter missing required field \"name\"", path))
+	}
+	if strings.TrimSpace(fm.DisplayName) == "" {
+		errs = append(errs, fmt.Sprintf("%s: frontmatter missing required field \"display_name\"", path))
+	}
+	if strings.TrimSpace(fm.Description) == "" {
+		errs = append(errs, fmt.Sprintf("%s: frontmatter missing required field \"description\"", path))
+	}
+	if fm.Status != "experimental" && fm.Status != "stable" {
+		errs = append(errs, fmt.Sprintf("%s: frontmatter status %q must be \"experimental\" or \"stable\"", path, fm.Status))
+	}
+	if len(fm.Tags) == 0 {
+		errs = append(errs, fmt.Sprintf("%s: frontmatter missing required field \"tags\" (must have at least one)", path))
 	}
 	return errs
 }
@@ -147,16 +208,23 @@ func validateReadme(path, kind string) []string {
 	return errs
 }
 
-func parseFrontmatter(data []byte) (readmeFrontmatter, error) {
+func parseFrontmatterRaw(data []byte) (string, error) {
 	s := string(data)
 	if !strings.HasPrefix(s, "---\n") {
-		return readmeFrontmatter{}, fmt.Errorf("README.md: missing YAML frontmatter (must start with ---)")
+		return "", fmt.Errorf("README.md: missing YAML frontmatter (must start with ---)")
 	}
 	end := strings.Index(s[4:], "\n---\n")
 	if end == -1 {
-		return readmeFrontmatter{}, fmt.Errorf("README.md: unclosed YAML frontmatter")
+		return "", fmt.Errorf("README.md: unclosed YAML frontmatter")
 	}
-	block := s[4 : 4+end]
+	return s[4 : 4+end], nil
+}
+
+func parseFrontmatter(data []byte) (readmeFrontmatter, error) {
+	block, err := parseFrontmatterRaw(data)
+	if err != nil {
+		return readmeFrontmatter{}, err
+	}
 	var fm readmeFrontmatter
 	if err := yaml.Unmarshal([]byte(block), &fm); err != nil {
 		return readmeFrontmatter{}, fmt.Errorf("README.md: invalid frontmatter YAML: %v", err)
