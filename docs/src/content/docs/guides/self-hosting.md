@@ -6,6 +6,10 @@ draft: false
 
 By default `dpod-seed` fetches distros from the public `github.com/iamy4n-dev/distros` registry. If your organisation needs private distros, you can point `dpod-seed` at private forks of all upstream repos.
 
+:::tip[Creating a personal distro]
+Looking for a step-by-step walkthrough of scaffolding and publishing a distro in your own fork? See [Creating your own distro](/dpod-seed/guides/creating-your-own-distro/).
+:::
+
 ## Host config file
 
 Create `~/.dpod-seed/config.yaml` on any machine where `dpod-seed` runs:

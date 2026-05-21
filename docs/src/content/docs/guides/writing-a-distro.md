@@ -6,6 +6,10 @@ draft: false
 
 A distro is a named, versioned composition of a devcontainer profile and a set of package bundles. Distros live in the [`distros` repository](https://github.com/iamy4n-dev/distros).
 
+:::tip[Personal distros]
+Want a distro that lives in your own fork instead of the upstream registry? See [Creating your own distro](/dpod-seed/guides/creating-your-own-distro/).
+:::
+
 ## Directory layout
 
 ```
