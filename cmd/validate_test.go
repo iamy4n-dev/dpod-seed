@@ -56,6 +56,39 @@ func TestRunValidate_resolveFailure(t *testing.T) {
 	}
 }
 
+func TestRunValidateRepo_valid(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "packages", "my-pkg")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(filepath.Join(dir, "manifest.yaml"), []byte("files: []\n"), 0o644)
+	os.WriteFile(filepath.Join(dir, "README.md"), []byte("---\nname: \"my-pkg\"\ndescription: \"A pkg\"\nstatus: stable\n---\n\n# my-pkg\n"), 0o644)
+
+	var out bytes.Buffer
+	if err := runValidateRepo(base, &out); err != nil {
+		t.Errorf("expected no error, got: %v", err)
+	}
+	if !strings.Contains(out.String(), "OK") {
+		t.Errorf("expected OK in output, got: %s", out.String())
+	}
+}
+
+func TestRunValidateRepo_invalid(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "distros", "bad")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(filepath.Join(dir, "distro.yaml"), []byte("name: \"\"\ndescription: \"\"\ndevcontainer: \"\"\npackages: []\n"), 0o644)
+	os.WriteFile(filepath.Join(dir, "README.md"), []byte("---\nname: \"bad\"\ndescription: \"desc\"\nstatus: stable\n---\n\n# bad\n"), 0o644)
+
+	var out bytes.Buffer
+	if err := runValidateRepo(base, &out); err == nil {
+		t.Error("expected error for invalid content")
+	}
+}
+
 func tempConfig(t *testing.T, content string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "dpod.yaml")
