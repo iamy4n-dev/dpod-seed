@@ -14,6 +14,7 @@ distros:
     description: Arch-based OS with AWS and Kubernetes tooling
     latestTag: v1.2.0
     changelogUrl: https://example.com/v1.2.0
+    status: stable
   - name: frontend-node
     description: Node.js frontend environment
     latestTag: v0.3.1
@@ -43,6 +44,12 @@ func TestList_valid(t *testing.T) {
 	}
 	if entries[1].Name != "frontend-node" {
 		t.Errorf("entries[1].name = %q", entries[1].Name)
+	}
+	if entries[0].Status != "stable" {
+		t.Errorf("entries[0].Status = %q, want %q", entries[0].Status, "stable")
+	}
+	if entries[1].Status != "" {
+		t.Errorf("entries[1].Status = %q, want empty (field absent)", entries[1].Status)
 	}
 }
 

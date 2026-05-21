@@ -13,6 +13,7 @@ type DistroEntry struct {
 	Description  string `yaml:"description"`
 	LatestTag    string `yaml:"latestTag"`
 	ChangelogURL string `yaml:"changelogUrl"`
+	Status       string `yaml:"status"`
 }
 
 type registryPayload struct {
