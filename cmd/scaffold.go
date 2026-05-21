@@ -55,7 +55,29 @@ description: ""
 devcontainer: arch-base@v0.1.0
 packages: []
 `
-	readme := "# " + name + "\n\nDescribe this distro.\n"
+	readme := `---
+name: ""
+display_name: ""
+description: ""
+status: experimental
+devcontainer: arch-base@v0.1.0
+tags: []
+packages: []
+---
+
+# ` + name + `
+
+Describe this distro.
+
+## Usage
+
+Add this to your project's ` + "`dpod.yaml`" + `:
+
+` + "```yaml" + `
+# dpod.yaml
+distro: ` + name + `@v0.1.0
+` + "```" + `
+`
 
 	if err := os.WriteFile(filepath.Join(dir, "distro.yaml"), []byte(distroYAML), 0o644); err != nil {
 		return err
@@ -88,7 +110,23 @@ func runScaffoldPackage(name, baseDir string) error {
 #       dest: .devcontainer/special-location
 files: []
 `
+	pkgReadme := `---
+name: ""
+display_name: ""
+description: ""
+status: experimental
+tags: []
+tools: []
+---
+
+# ` + name + `
+
+Describe this package bundle.
+`
 	if err := os.WriteFile(filepath.Join(dir, "manifest.yaml"), []byte(manifestYAML), 0o644); err != nil {
+		return err
+	}
+	if err := os.WriteFile(filepath.Join(dir, "README.md"), []byte(pkgReadme), 0o644); err != nil {
 		return err
 	}
 	fmt.Printf("Created packages/%s/\n", name)
