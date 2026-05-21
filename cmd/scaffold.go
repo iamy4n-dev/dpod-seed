@@ -52,7 +52,7 @@ func runScaffoldDistro(name, baseDir string) error {
 #     - k8s-tools@v1.1.0
 name: ` + name + `
 description: ""
-devcontainer: arch-base@v1.0.0
+devcontainer: arch-base@v0.1.0
 packages: []
 `
 	readme := "# " + name + "\n\nDescribe this distro.\n"
