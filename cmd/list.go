@@ -13,7 +13,7 @@ import (
 	"github.com/iamy4n-dev/dpod-seed/internal/registry"
 )
 
-const defaultRegistryURL = "https://raw.githubusercontent.com/duyanh-y4n/distros/main/registry.yaml"
+const defaultRegistryURL = "https://raw.githubusercontent.com/iamy4n-dev/distros/main/registry.yaml"
 
 var registryURL string
 

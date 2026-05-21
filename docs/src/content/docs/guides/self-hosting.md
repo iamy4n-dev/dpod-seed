@@ -4,7 +4,7 @@ description: Run dpod-seed against your own private forks of the upstream reposi
 draft: false
 ---
 
-By default `dpod-seed` fetches distros from the public `github.com/duyanh-y4n/distros` registry. If your organisation needs private distros, you can point `dpod-seed` at private forks of all upstream repos.
+By default `dpod-seed` fetches distros from the public `github.com/iamy4n-dev/distros` registry. If your organisation needs private distros, you can point `dpod-seed` at private forks of all upstream repos.
 
 ## Host config file
 
@@ -22,10 +22,10 @@ All fields are optional — omit any field to fall back to the public default.
 
 | Field | Default |
 |-------|---------|
-| `registryURL` | `https://raw.githubusercontent.com/duyanh-y4n/distros/main/registry.yaml` |
-| `repos.distro` | `github.com/duyanh-y4n/distros` |
-| `repos.devcontainer` | `github.com/duyanh-y4n/devcontainer` |
-| `repos.packages` | `github.com/duyanh-y4n/packages` |
+| `registryURL` | `https://raw.githubusercontent.com/iamy4n-dev/distros/main/registry.yaml` |
+| `repos.distro` | `github.com/iamy4n-dev/distros` |
+| `repos.devcontainer` | `github.com/iamy4n-dev/devcontainer` |
+| `repos.packages` | `github.com/iamy4n-dev/packages` |
 
 ## What to fork
 
@@ -33,9 +33,9 @@ To fully self-host, fork these three repos:
 
 | Repo | Purpose |
 |------|---------|
-| `duyanh-y4n/distros` | Registry of named distros; hosts `registry.yaml` |
-| `duyanh-y4n/devcontainer` | Devcontainer profiles referenced by distros |
-| `duyanh-y4n/packages` | Package bundles referenced by distros |
+| `iamy4n-dev/distros` | Registry of named distros; hosts `registry.yaml` |
+| `iamy4n-dev/devcontainer` | Devcontainer profiles referenced by distros |
+| `iamy4n-dev/packages` | Package bundles referenced by distros |
 
 Each fork works identically to the upstream — add your own distros, devcontainer profiles, and packages following the same contribution workflow.
 

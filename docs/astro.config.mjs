@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
-  site: 'https://duyanh-y4n.github.io',
+  site: 'https://iamy4n-dev.github.io',
   base: '/dpod-seed',
   integrations: [
     starlight({

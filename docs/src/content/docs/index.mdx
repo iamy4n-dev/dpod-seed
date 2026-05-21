@@ -13,13 +13,13 @@ You declare which environment you want in `dpod.yaml`; `dpod-seed` materialises 
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/duyanh-y4n/dpod-seed/master/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/iamy4n-dev/dpod-seed/master/install.sh | sh
 ```
 
 To install a specific version:
 
 ```sh
-VERSION=v0.1.0 curl -fsSL https://raw.githubusercontent.com/duyanh-y4n/dpod-seed/master/install.sh | sh
+VERSION=v0.1.0 curl -fsSL https://raw.githubusercontent.com/iamy4n-dev/dpod-seed/master/install.sh | sh
 ```
 
 Binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64` are attached to every [GitHub Release](https://github.com/iamy4n-dev/dpod-seed/releases).
@@ -32,7 +32,7 @@ Binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64` ar
 // .devcontainer/devcontainer.json
 {
   "features": {
-    "ghcr.io/duyanh-y4n/devcontainer/dpod-seed:1": {}
+    "ghcr.io/iamy4n-dev/devcontainer/dpod-seed:1": {}
   }
 }
 ```
@@ -42,7 +42,7 @@ Pin a specific version:
 ```jsonc
 {
   "features": {
-    "ghcr.io/duyanh-y4n/devcontainer/dpod-seed:1": { "version": "v0.1.0" }
+    "ghcr.io/iamy4n-dev/devcontainer/dpod-seed:1": { "version": "v0.1.0" }
   }
 }
 ```

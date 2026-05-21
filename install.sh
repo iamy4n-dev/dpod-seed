@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-REPO="duyanh-y4n/dpod-seed"
+REPO="iamy4n-dev/dpod-seed"
 BIN_NAME="dpod-seed"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 

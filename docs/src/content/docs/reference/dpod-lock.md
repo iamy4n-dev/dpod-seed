@@ -30,7 +30,7 @@ Each record has:
 | Field | Description |
 |-------|-------------|
 | `path` | Destination path of the file relative to the project root |
-| `repo` | Source repository (e.g. `github.com/duyanh-y4n/devcontainer`) |
+| `repo` | Source repository (e.g. `github.com/iamy4n-dev/devcontainer`) |
 | `sha` | Git commit SHA the file was fetched from |
 
 ## Example
@@ -38,10 +38,10 @@ Each record has:
 ```yaml
 files:
   - path: .devcontainer/devcontainer.json
-    repo: github.com/duyanh-y4n/devcontainer
+    repo: github.com/iamy4n-dev/devcontainer
     sha: a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
   - path: .devcontainer/init.sh
-    repo: github.com/duyanh-y4n/packages
+    repo: github.com/iamy4n-dev/packages
     sha: 9f8e7d6c5b4a9f8e7d6c5b4a9f8e7d6c5b4a9f8e
 ```
 

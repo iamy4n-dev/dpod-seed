@@ -4,7 +4,7 @@ description: Schema reference for distro.yaml — the composition spec for a dpo
 draft: false
 ---
 
-`distro.yaml` lives inside the [`distros` repository](https://github.com/duyanh-y4n/distros) at `distros/<name>/distro.yaml`. It defines what a distro includes and is the source of truth for the registry.
+`distro.yaml` lives inside the [`distros` repository](https://github.com/iamy4n-dev/distros) at `distros/<name>/distro.yaml`. It defines what a distro includes and is the source of truth for the registry.
 
 ## Schema
 
@@ -44,7 +44,7 @@ description: Kubernetes development environment with kubectl, helm, and k9s
 devcontainer: arch-base@v2.0.0
 ```
 
-Format: `<profile>@<tag>` where the profile name and tag reference a file in `github.com/duyanh-y4n/devcontainer`.
+Format: `<profile>@<tag>` where the profile name and tag reference a file in `github.com/iamy4n-dev/devcontainer`.
 
 ### `packages`
 
@@ -56,7 +56,7 @@ packages:
   - k8s-tools@v1.1.0
 ```
 
-Format: `<bundle>@<tag>` where the bundle name and tag reference a file in `github.com/duyanh-y4n/packages`.
+Format: `<bundle>@<tag>` where the bundle name and tag reference a file in `github.com/iamy4n-dev/packages`.
 
 ## Example
 

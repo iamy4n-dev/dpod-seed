@@ -2,12 +2,12 @@
 
 CLI for managing reproducible DevPod environments from verified upstream distros.
 
-**[Documentation](https://duyanh-y4n.github.io/dpod-seed)**
+**[Documentation](https://iamy4n-dev.github.io/dpod-seed)**
 
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/duyanh-y4n/dpod-seed/master/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/iamy4n-dev/dpod-seed/master/install.sh | sh
 ```
 
 ## Quick start

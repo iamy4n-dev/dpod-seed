@@ -82,7 +82,7 @@ dpod-seed list [--registry <url>]
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--registry` | `https://raw.githubusercontent.com/duyanh-y4n/distros/main/registry.yaml` | URL of the `registry.yaml` file |
+| `--registry` | `https://raw.githubusercontent.com/iamy4n-dev/distros/main/registry.yaml` | URL of the `registry.yaml` file |
 
 **Output:**
 ```

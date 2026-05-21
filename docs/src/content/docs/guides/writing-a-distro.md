@@ -4,7 +4,7 @@ description: How to author, test, and contribute a new distro to the upstream re
 draft: false
 ---
 
-A distro is a named, versioned composition of a devcontainer profile and a set of package bundles. Distros live in the [`distros` repository](https://github.com/duyanh-y4n/distros).
+A distro is a named, versioned composition of a devcontainer profile and a set of package bundles. Distros live in the [`distros` repository](https://github.com/iamy4n-dev/distros).
 
 ## Directory layout
 
@@ -81,7 +81,7 @@ CI automatically regenerates `registry.yaml` and commits it to `main`. The new d
 
 A distro references:
 
-- **devcontainer profile** — from `github.com/duyanh-y4n/devcontainer`, e.g. `arch-base@v2.0.0`
-- **package bundles** — from `github.com/duyanh-y4n/packages`, e.g. `k8s-tools@v1.1.0`
+- **devcontainer profile** — from `github.com/iamy4n-dev/devcontainer`, e.g. `arch-base@v2.0.0`
+- **package bundles** — from `github.com/iamy4n-dev/packages`, e.g. `k8s-tools@v1.1.0`
 
 Each bundle contributes files under `.devcontainer/`. Pinning by tag ensures the composition is reproducible and auditable.
