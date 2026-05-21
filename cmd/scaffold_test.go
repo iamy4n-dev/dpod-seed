@@ -23,8 +23,19 @@ func TestScaffoldDistro_createsFiles(t *testing.T) {
 	}
 
 	readme := filepath.Join(base, "distros", "my-distro", "README.md")
-	if _, err := os.Stat(readme); err != nil {
-		t.Errorf("README.md not created: %v", err)
+	content, err := os.ReadFile(readme)
+	if err != nil {
+		t.Fatalf("README.md not created: %v", err)
+	}
+	for _, want := range []string{
+		"---",
+		"display_name:", "description:", "status: experimental",
+		"devcontainer:", "tags:", "packages:",
+		"```yaml", "dpod.yaml",
+	} {
+		if !strings.Contains(string(content), want) {
+			t.Errorf("distro README missing %q", want)
+		}
 	}
 }
 
@@ -58,6 +69,21 @@ func TestScaffoldPackage_createsFiles(t *testing.T) {
 	content, _ := os.ReadFile(manifest)
 	if !strings.Contains(string(content), "dotfiles/") {
 		t.Error("manifest.yaml should document dotfiles/ convention")
+	}
+
+	pkgReadme := filepath.Join(base, "packages", "my-pkg", "README.md")
+	pkgContent, err := os.ReadFile(pkgReadme)
+	if err != nil {
+		t.Fatalf("README.md not created: %v", err)
+	}
+	for _, want := range []string{
+		"---",
+		"display_name:", "description:", "status: experimental",
+		"tags:", "tools:",
+	} {
+		if !strings.Contains(string(pkgContent), want) {
+			t.Errorf("package README missing %q", want)
+		}
 	}
 }
 
