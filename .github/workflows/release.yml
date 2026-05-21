@@ -36,7 +36,7 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           go build \
-            -ldflags="-s -w -X github.com/duyanh-y4n/dpod-seed/cmd.version=${{ github.ref_name }}" \
+            -ldflags="-s -w -X github.com/iamy4n-dev/dpod-seed/cmd.version=${{ github.ref_name }}" \
             -o dpod-seed_${{ matrix.goos }}_${{ matrix.goarch }} \
             .
 
