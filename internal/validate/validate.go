@@ -28,7 +28,7 @@ func Run(root string) []string {
 
 	var errs []string
 	if hasDistros {
-		errs = append(errs, walkAndValidate(distrosDir, DistroDir)...)
+		errs = append(errs, walkDistros(distrosDir)...)
 	}
 	if hasPackages {
 		errs = append(errs, walkAndValidate(packagesDir, PackageDir)...)
@@ -42,6 +42,28 @@ func Run(root string) []string {
 func dirExists(path string) bool {
 	info, err := os.Stat(path)
 	return err == nil && info.IsDir()
+}
+
+// walkDistros handles both flat (distros/{name}) and org-namespaced (distros/{org}/{name}) layouts.
+// A directory is a leaf distro if it contains distro.yaml; otherwise it is treated as an org namespace.
+func walkDistros(root string) []string {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return []string{fmt.Sprintf("%s: cannot read directory: %v", root, err)}
+	}
+	var errs []string
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		dir := filepath.Join(root, e.Name())
+		if _, err := os.Stat(filepath.Join(dir, "distro.yaml")); err == nil {
+			errs = append(errs, DistroDir(dir)...)
+		} else {
+			errs = append(errs, walkAndValidate(dir, DistroDir)...)
+		}
+	}
+	return errs
 }
 
 func walkAndValidate(root string, validate func(string) []string) []string {

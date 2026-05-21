@@ -359,3 +359,32 @@ func TestValidateDistroDir_valid(t *testing.T) {
 		t.Errorf("expected no errors, got: %v", errs)
 	}
 }
+
+func TestRun_distrosRepo_orgNamespace(t *testing.T) {
+	base := t.TempDir()
+	// Distro nested under an org namespace (distros/{org}/{name})
+	dir := filepath.Join(base, "distros", "acme", "my-distro")
+	writeFile(t, filepath.Join(dir, "distro.yaml"), validDistroYAML)
+	writeFile(t, filepath.Join(dir, "README.md"), validDistroReadme)
+
+	errs := validate.Run(base)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors for org-namespaced distro, got: %v", errs)
+	}
+}
+
+func TestRun_distrosRepo_orgNamespace_invalid(t *testing.T) {
+	base := t.TempDir()
+	dir := filepath.Join(base, "distros", "acme", "bad-distro")
+	writeFile(t, filepath.Join(dir, "distro.yaml"), `name: ""
+description: ""
+devcontainer: arch-base@v1.0.0
+packages: []
+`)
+	writeFile(t, filepath.Join(dir, "README.md"), validDistroReadme)
+
+	errs := validate.Run(base)
+	if len(errs) == 0 {
+		t.Error("expected errors from invalid org-namespaced distro, got none")
+	}
+}
