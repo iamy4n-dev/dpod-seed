@@ -37,9 +37,9 @@ func runList(w io.Writer, client registry.Client) error {
 		return fmt.Errorf("list distros: %w", err)
 	}
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(tw, "NAME\tDESCRIPTION\tLATEST TAG")
+	fmt.Fprintln(tw, "NAME\tDESCRIPTION\tLATEST TAG\tSTATUS")
 	for _, e := range entries {
-		fmt.Fprintf(tw, "%s\t%s\t%s\n", e.Name, e.Description, e.LatestTag)
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", e.Name, e.Description, e.LatestTag, e.Status)
 	}
 	return tw.Flush()
 }
