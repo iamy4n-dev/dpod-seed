@@ -76,6 +76,12 @@ func TestRunGenerate_writesPopulatedJSON(t *testing.T) {
 	if len(out.Distros[0].Packages) != 2 {
 		t.Errorf("expected 2 packages, got %d", len(out.Distros[0].Packages))
 	}
+	if out.Distros[0].Packages[0].Name != "shell-zsh" {
+		t.Errorf("package[0].Name = %q, want shell-zsh", out.Distros[0].Packages[0].Name)
+	}
+	if out.Distros[0].Packages[0].Version != "v1.3.0" {
+		t.Errorf("package[0].Version = %q, want v1.3.0", out.Distros[0].Packages[0].Version)
+	}
 }
 
 func TestRunGenerate_fetchError_removesOutputFile(t *testing.T) {
