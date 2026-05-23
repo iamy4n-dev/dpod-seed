@@ -13,6 +13,7 @@ export default defineConfig({
       ],
       sidebar: [
         { label: 'Getting Started', link: '/' },
+        { label: 'Registry', link: '/registry/' },
         {
           label: 'Guides',
           items: [
