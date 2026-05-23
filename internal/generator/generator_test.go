@@ -82,9 +82,9 @@ func TestGenerate_singleDistro_validJSON(t *testing.T) {
 	}
 }
 
-// --- Package names stripped of version ---
+// --- Package versions preserved as structured fields ---
 
-func TestGenerate_packageNamesStripped(t *testing.T) {
+func TestGenerate_packageVersionsPreserved(t *testing.T) {
 	reg := &stubRegistryClient{entries: []registry.DistroEntry{
 		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
 	}}
@@ -102,13 +102,20 @@ func TestGenerate_packageNamesStripped(t *testing.T) {
 	var out generator.Output
 	json.Unmarshal([]byte(buf.String()), &out)
 	pkgs := out.Distros[0].Packages
-	for _, p := range pkgs {
-		if strings.Contains(p, "@") {
-			t.Errorf("package name should have version stripped, got: %q", p)
-		}
-	}
 	if len(pkgs) != 2 {
-		t.Errorf("expected 2 packages, got %d: %v", len(pkgs), pkgs)
+		t.Fatalf("expected 2 packages, got %d", len(pkgs))
+	}
+	if pkgs[0].Name != "shell-zsh" {
+		t.Errorf("pkgs[0].Name = %q, want shell-zsh", pkgs[0].Name)
+	}
+	if pkgs[0].Version != "v1.3.0" {
+		t.Errorf("pkgs[0].Version = %q, want v1.3.0", pkgs[0].Version)
+	}
+	if pkgs[1].Name != "k8s-tools" {
+		t.Errorf("pkgs[1].Name = %q, want k8s-tools", pkgs[1].Name)
+	}
+	if pkgs[1].Version != "v1.1.0" {
+		t.Errorf("pkgs[1].Version = %q, want v1.1.0", pkgs[1].Version)
 	}
 }
 
