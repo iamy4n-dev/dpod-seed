@@ -205,6 +205,70 @@ func TestGenerate_sourceURL_isGitHubTreeURL(t *testing.T) {
 	}
 }
 
+func TestGenerate_readmeWithFrontmatter_frontmatterStripped(t *testing.T) {
+	const readmeWithFrontmatter = `---
+title: devops-k8s
+description: Some meta
+version: v0.2.0
+---
+
+# devops-k8s
+
+A Kubernetes distro.
+`
+	reg := &stubRegistryClient{entries: []registry.DistroEntry{
+		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
+	}}
+	f := &stubFetcher{files: map[string][]fetch.File{
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/distro.yaml": {
+			{Path: "distro.yaml", Content: []byte(devopsDistroYAML)},
+		},
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/README.md": {
+			{Path: "README.md", Content: []byte(readmeWithFrontmatter)},
+		},
+	}}
+
+	var buf strings.Builder
+	if err := generator.Generate(reg, f, "github.com/iamy4n-dev/distros", &buf); err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+
+	var out generator.Output
+	json.Unmarshal([]byte(buf.String()), &out)
+	readme := out.Distros[0].Readme
+	if strings.Contains(readme, "title: devops-k8s") {
+		t.Error("readme should not contain frontmatter key-value pairs")
+	}
+	if !strings.Contains(readme, "A Kubernetes distro.") {
+		t.Errorf("readme should contain body content, got: %q", readme)
+	}
+}
+
+func TestGenerate_readmeWithoutFrontmatter_contentUnchanged(t *testing.T) {
+	reg := &stubRegistryClient{entries: []registry.DistroEntry{
+		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
+	}}
+	f := &stubFetcher{files: map[string][]fetch.File{
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/distro.yaml": {
+			{Path: "distro.yaml", Content: []byte(devopsDistroYAML)},
+		},
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/README.md": {
+			{Path: "README.md", Content: []byte(devopsReadme)},
+		},
+	}}
+
+	var buf strings.Builder
+	if err := generator.Generate(reg, f, "github.com/iamy4n-dev/distros", &buf); err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+
+	var out generator.Output
+	json.Unmarshal([]byte(buf.String()), &out)
+	if out.Distros[0].Readme != devopsReadme {
+		t.Errorf("readme without frontmatter should be stored as-is\ngot:  %q\nwant: %q", out.Distros[0].Readme, devopsReadme)
+	}
+}
+
 func TestGenerate_withoutReadme_noErrorAndEmptyField(t *testing.T) {
 	reg := &stubRegistryClient{entries: []registry.DistroEntry{
 		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},

@@ -10,7 +10,7 @@
         { "name": "shell-zsh", "version": "v1.3.0" },
         { "name": "k8s-tools", "version": "v1.1.0" }
       ],
-      "readme": "# devops-k8s\n\nA Kubernetes development distro with k8s-tools and zsh.\n",
+      "readme": "# devops-k8s\n\nA Kubernetes development distro with k8s-tools and zsh.\n\nInstall with: <script>alert('xss')</script>\n",
       "sourceUrl": "https://github.com/iamy4n-dev/distros/tree/v0.2.0/distros/devops-k8s"
     },
     {

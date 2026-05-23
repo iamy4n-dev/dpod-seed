@@ -1,6 +1,7 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
 import registryData from '../../data/registry-data.json';
 
 export function getStaticPaths() {
@@ -12,7 +13,16 @@ export function getStaticPaths() {
 
 const { distro: d } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const readmeHTML = d.readme ? marked.parse(d.readme) : null;
+const readmeHTML = d.readme
+  ? sanitizeHtml(await marked.parse(d.readme), {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'alt', 'title'],
+        a: ['href', 'title', 'target', 'rel'],
+      },
+    })
+  : null;
 ---
 
 <StarlightPage frontmatter={{ title: d.name, description: d.description }}>
