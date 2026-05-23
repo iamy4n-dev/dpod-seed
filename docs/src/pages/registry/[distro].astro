@@ -1,0 +1,191 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import registryData from '../../data/registry-data.json';
+
+export function getStaticPaths() {
+  return registryData.distros.map((d) => ({
+    params: { distro: d.name },
+    props: { distro: d },
+  }));
+}
+
+const { distro: d } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<StarlightPage frontmatter={{ title: d.name, description: d.description }}>
+  <a class="back-link" href={`${base}/registry/`}>← All distros</a>
+
+  <div class="distro-header">
+    <h1 class="distro-title">{d.name}</h1>
+    <span class:list={['status-badge', d.status === 'stable' ? 'stable' : 'experimental']}>
+      {d.status}
+    </span>
+    <span class="distro-tag">{d.latestTag}</span>
+  </div>
+
+  <p class="distro-desc">{d.description}</p>
+
+  {d.changelogUrl && (
+    <p class="changelog-link">
+      <a href={d.changelogUrl} target="_blank" rel="noopener noreferrer">View changelog →</a>
+    </p>
+  )}
+
+  <div class="copy-section">
+    <p class="copy-label">Add to your <code>dpod.yaml</code>:</p>
+    <div class="copy-row">
+      <code class="copy-snippet" id="snippet">{`distro: ${d.name}@${d.latestTag}`}</code>
+      <button class="copy-btn" onclick="copySnippet()">Copy</button>
+    </div>
+  </div>
+
+  {d.packages && d.packages.length > 0 && (
+    <section class="pkg-section">
+      <h2>Packages</h2>
+      <table class="pkg-table">
+        <thead>
+          <tr><th>Name</th><th>Version</th></tr>
+        </thead>
+        <tbody>
+          {d.packages.map((p) => (
+            <tr>
+              <td class="pkg-name">{p.name}</td>
+              <td class="pkg-version">{p.version ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  )}
+
+  <style>
+    .back-link {
+      font-size: 0.875rem;
+      color: var(--sl-color-accent);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .distro-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+    .distro-title {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    .distro-tag {
+      font-size: 0.85rem;
+      color: var(--sl-color-gray-3);
+      font-family: var(--sl-font-mono);
+    }
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .status-badge.stable {
+      background: var(--sl-color-green-low);
+      color: var(--sl-color-green-high);
+    }
+    .status-badge.experimental {
+      background: var(--sl-color-orange-low);
+      color: var(--sl-color-orange-high);
+    }
+    .distro-desc {
+      font-size: 1rem;
+      color: var(--sl-color-gray-2);
+      margin: 0 0 1rem;
+    }
+    .changelog-link {
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+    .copy-section {
+      background: var(--sl-color-gray-6);
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .copy-label {
+      margin: 0 0 0.5rem;
+      font-size: 0.8rem;
+      color: var(--sl-color-gray-3);
+    }
+    .copy-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .copy-snippet {
+      font-family: var(--sl-font-mono);
+      font-size: 0.9rem;
+      flex: 1;
+    }
+    .copy-btn {
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--sl-color-accent);
+      border-radius: 0.375rem;
+      background: transparent;
+      color: var(--sl-color-accent);
+      cursor: pointer;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .copy-btn:hover {
+      background: var(--sl-color-accent);
+      color: var(--sl-color-white);
+    }
+    .pkg-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    .pkg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .pkg-table th {
+      text-align: left;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 2px solid var(--sl-color-gray-5);
+      color: var(--sl-color-gray-2);
+      font-weight: 600;
+    }
+    .pkg-table td {
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid var(--sl-color-gray-6);
+    }
+    .pkg-name {
+      font-family: var(--sl-font-mono);
+      font-weight: 500;
+    }
+    .pkg-version {
+      font-family: var(--sl-font-mono);
+      color: var(--sl-color-gray-3);
+    }
+  </style>
+
+  <script define:vars={{ snippet: `distro: ${d.name}@${d.latestTag}` }}>
+    function copySnippet() {
+      navigator.clipboard.writeText(snippet).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        if (!btn) return;
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
+    }
+    window.copySnippet = copySnippet;
+  </script>
+</StarlightPage>
