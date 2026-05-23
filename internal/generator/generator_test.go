@@ -46,6 +46,11 @@ packages:
   - k8s-tools@v1.1.0
 `
 
+const devopsReadme = `# devops-k8s
+
+A Kubernetes development distro with k8s-tools and zsh.
+`
+
 // --- Tracer bullet ---
 
 func TestGenerate_singleDistro_validJSON(t *testing.T) {
@@ -172,5 +177,82 @@ func TestGenerate_registryError_returnsError(t *testing.T) {
 	err := generator.Generate(reg, &stubFetcher{}, "github.com/iamy4n-dev/distros", &buf)
 	if err == nil {
 		t.Error("expected error from registry failure")
+	}
+}
+
+// --- README content ---
+
+func TestGenerate_sourceURL_isGitHubTreeURL(t *testing.T) {
+	reg := &stubRegistryClient{entries: []registry.DistroEntry{
+		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
+	}}
+	f := &stubFetcher{files: map[string][]fetch.File{
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/distro.yaml": {
+			{Path: "distro.yaml", Content: []byte(devopsDistroYAML)},
+		},
+	}}
+
+	var buf strings.Builder
+	if err := generator.Generate(reg, f, "github.com/iamy4n-dev/distros", &buf); err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+
+	var out generator.Output
+	json.Unmarshal([]byte(buf.String()), &out)
+	want := "https://github.com/iamy4n-dev/distros/tree/v0.2.0/distros/devops-k8s"
+	if out.Distros[0].SourceURL != want {
+		t.Errorf("sourceUrl = %q, want %q", out.Distros[0].SourceURL, want)
+	}
+}
+
+func TestGenerate_withoutReadme_noErrorAndEmptyField(t *testing.T) {
+	reg := &stubRegistryClient{entries: []registry.DistroEntry{
+		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
+	}}
+	f := &stubFetcher{files: map[string][]fetch.File{
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/distro.yaml": {
+			{Path: "distro.yaml", Content: []byte(devopsDistroYAML)},
+		},
+		// no README.md entry
+	}}
+
+	var buf strings.Builder
+	if err := generator.Generate(reg, f, "github.com/iamy4n-dev/distros", &buf); err != nil {
+		t.Fatalf("Generate returned error with no README: %v", err)
+	}
+
+	var out generator.Output
+	json.Unmarshal([]byte(buf.String()), &out)
+	if out.Distros[0].Readme != "" {
+		t.Errorf("expected empty readme, got %q", out.Distros[0].Readme)
+	}
+}
+
+func TestGenerate_withReadme_populatesReadmeField(t *testing.T) {
+	reg := &stubRegistryClient{entries: []registry.DistroEntry{
+		{Name: "devops-k8s", Description: "K8s env", LatestTag: "v0.2.0", Status: "stable"},
+	}}
+	f := &stubFetcher{files: map[string][]fetch.File{
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/distro.yaml": {
+			{Path: "distro.yaml", Content: []byte(devopsDistroYAML)},
+		},
+		"github.com/iamy4n-dev/distros@v0.2.0/distros/devops-k8s/README.md": {
+			{Path: "README.md", Content: []byte(devopsReadme)},
+		},
+	}}
+
+	var buf strings.Builder
+	if err := generator.Generate(reg, f, "github.com/iamy4n-dev/distros", &buf); err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+
+	var out generator.Output
+	json.Unmarshal([]byte(buf.String()), &out)
+	d := out.Distros[0]
+	if d.Readme == "" {
+		t.Error("expected readme to be populated")
+	}
+	if !strings.Contains(d.Readme, "devops-k8s") {
+		t.Errorf("readme = %q, expected to contain 'devops-k8s'", d.Readme)
 	}
 }

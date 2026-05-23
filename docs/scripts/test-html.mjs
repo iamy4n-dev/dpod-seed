@@ -79,6 +79,16 @@ assert(
   'index card links to slash-named distro detail page'
 );
 
+// --- README and source link on detail page ---
+assert(
+  detailHtml.includes('k8s-tools and zsh'),
+  'detail page renders README body content'
+);
+assert(
+  detailHtml.includes('href="https://github.com/iamy4n-dev/distros/tree/v0.2.0/distros/devops-k8s"'),
+  'detail page has GitHub source link'
+);
+
 if (failures > 0) {
   console.error(`\n${failures} assertion(s) failed.`);
   process.exit(1);

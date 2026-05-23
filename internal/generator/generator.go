@@ -26,6 +26,8 @@ type DistroRecord struct {
 	Status       string    `json:"status"`
 	ChangelogURL string    `json:"changelogUrl,omitempty"`
 	Packages     []Package `json:"packages"`
+	Readme       string    `json:"readme,omitempty"`
+	SourceURL    string    `json:"sourceUrl,omitempty"`
 }
 
 // Output is the top-level structure of registry-data.json.
@@ -73,6 +75,19 @@ func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writ
 				pkgs = append(pkgs, Package{Name: p})
 			}
 		}
+		ownerRepo := strings.TrimPrefix(distroRepo, "github.com/")
+		sourceURL := "https://github.com/" + ownerRepo + "/tree/" + e.LatestTag + "/distros/" + e.Name
+
+		var readme string
+		if readmeFiles, err := f.Fetch(distroRepo, e.LatestTag, "distros/"+e.Name+"/README.md"); err == nil {
+			for _, file := range readmeFiles {
+				if strings.HasSuffix(file.Path, "README.md") || file.Path == "README.md" {
+					readme = string(file.Content)
+					break
+				}
+			}
+		}
+
 		records = append(records, DistroRecord{
 			Name:         e.Name,
 			Description:  e.Description,
@@ -80,6 +95,8 @@ func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writ
 			Status:       e.Status,
 			ChangelogURL: e.ChangelogURL,
 			Packages:     pkgs,
+			Readme:       readme,
+			SourceURL:    sourceURL,
 		})
 	}
 

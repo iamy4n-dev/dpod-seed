@@ -1,5 +1,6 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { marked } from 'marked';
 import registryData from '../../data/registry-data.json';
 
 export function getStaticPaths() {
@@ -11,6 +12,7 @@ export function getStaticPaths() {
 
 const { distro: d } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const readmeHTML = d.readme ? marked.parse(d.readme) : null;
 ---
 
 <StarlightPage frontmatter={{ title: d.name, description: d.description }}>
@@ -26,11 +28,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   <p class="distro-desc">{d.description}</p>
 
-  {d.changelogUrl && (
-    <p class="changelog-link">
-      <a href={d.changelogUrl} target="_blank" rel="noopener noreferrer">View changelog →</a>
-    </p>
-  )}
+  <div class="meta-links">
+    {d.sourceUrl && (
+      <a class="source-link" href={d.sourceUrl} target="_blank" rel="noopener noreferrer">
+        View source on GitHub →
+      </a>
+    )}
+    {d.changelogUrl && (
+      <a class="changelog-link-a" href={d.changelogUrl} target="_blank" rel="noopener noreferrer">
+        Changelog →
+      </a>
+    )}
+  </div>
 
   <div class="copy-section">
     <p class="copy-label">Add to your <code>dpod.yaml</code>:</p>
@@ -56,6 +65,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           ))}
         </tbody>
       </table>
+    </section>
+  )}
+
+  {readmeHTML && (
+    <section class="readme-section">
+      <h2>README</h2>
+      <div class="readme-content" set:html={readmeHTML} />
     </section>
   )}
 
@@ -173,6 +189,44 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     .pkg-version {
       font-family: var(--sl-font-mono);
       color: var(--sl-color-gray-3);
+    }
+    .meta-links {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+    }
+    .source-link, .changelog-link-a {
+      color: var(--sl-color-accent);
+      text-decoration: none;
+    }
+    .source-link:hover, .changelog-link-a:hover { text-decoration: underline; }
+    .readme-section {
+      margin-top: 2rem;
+      border-top: 1px solid var(--sl-color-gray-5);
+      padding-top: 1.5rem;
+    }
+    .readme-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .readme-content {
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .readme-content h1, .readme-content h2, .readme-content h3 {
+      margin-top: 1.25rem;
+    }
+    .readme-content code {
+      font-family: var(--sl-font-mono);
+      font-size: 0.85em;
+    }
+    .readme-content pre {
+      background: var(--sl-color-gray-6);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      overflow-x: auto;
     }
   </style>
 
