@@ -22,6 +22,24 @@
         { "name": "python", "version": "v3.12.0" }
       ],
       "sourceUrl": "https://github.com/iamy4n-dev/distros/tree/v0.1.0/distros/y4n/backend-python-base"
+    },
+    {
+      "name": "y4n/architect-ai",
+      "description": "AI-powered software architect environment with Claude Code, Codex, OpenCode, and Pi for code exploration and technical decision-making",
+      "latestTag": "v0.2.0",
+      "status": "experimental",
+      "packages": [
+        { "name": "fish-config", "version": "v0.1.0" },
+        { "name": "node-runtime", "version": "v0.1.0" },
+        { "name": "cli-essentials", "version": "v0.1.0" },
+        { "name": "tui-power", "version": "v0.1.0" },
+        { "name": "ai-agent-claude", "version": "v0.2.0" },
+        { "name": "ai-agent-codex", "version": "v0.2.0" },
+        { "name": "ai-agent-opencode", "version": "v0.2.0" },
+        { "name": "ai-agent-pi", "version": "v0.2.0" }
+      ],
+      "readme": "# y4n/architect-ai\n\nA development environment for software architects who rely on AI agents for code exploration, codebase understanding, and technical decision-making.\n\nIncludes Claude Code, OpenAI Codex, OpenCode, and Pi alongside fish shell, cli-essentials, and tui-power.\n",
+      "sourceUrl": "https://github.com/iamy4n-dev/distros/tree/v0.2.0/distros/y4n/architect-ai"
     }
   ]
 }
