@@ -12,14 +12,20 @@ import (
 	"github.com/iamy4n-dev/dpod-seed/internal/registry"
 )
 
+// Package is a distro package entry with its name and pinned version.
+type Package struct {
+	Name    string `json:"name"`
+	Version string `json:"version,omitempty"`
+}
+
 // DistroRecord is one entry in the generated registry-data.json.
 type DistroRecord struct {
-	Name         string   `json:"name"`
-	Description  string   `json:"description"`
-	LatestTag    string   `json:"latestTag"`
-	Status       string   `json:"status"`
-	ChangelogURL string   `json:"changelogUrl,omitempty"`
-	Packages     []string `json:"packages"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	LatestTag    string    `json:"latestTag"`
+	Status       string    `json:"status"`
+	ChangelogURL string    `json:"changelogUrl,omitempty"`
+	Packages     []Package `json:"packages"`
 }
 
 // Output is the top-level structure of registry-data.json.
@@ -59,12 +65,12 @@ func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writ
 		if err := yaml.Unmarshal(content, &d); err != nil {
 			return fmt.Errorf("parse distro %s: %w", e.Name, err)
 		}
-		pkgs := make([]string, 0, len(d.Packages))
+		pkgs := make([]Package, 0, len(d.Packages))
 		for _, p := range d.Packages {
 			if i := strings.LastIndex(p, "@"); i >= 0 {
-				pkgs = append(pkgs, p[:i])
+				pkgs = append(pkgs, Package{Name: p[:i], Version: p[i+1:]})
 			} else {
-				pkgs = append(pkgs, p)
+				pkgs = append(pkgs, Package{Name: p})
 			}
 		}
 		records = append(records, DistroRecord{
