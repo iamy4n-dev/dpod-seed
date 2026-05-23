@@ -60,6 +60,25 @@ assert(
   'detail page has back link'
 );
 
+// --- registry/y4n/backend-python-base/index.html ---
+// Distros with slashes in their name must generate a detail page under a nested path.
+const slashDistroHtml = readFileSync('dist/registry/y4n/backend-python-base/index.html', 'utf8');
+
+assert(
+  slashDistroHtml.includes('backend-python-base') || slashDistroHtml.includes('y4n/backend-python-base'),
+  'slash-named distro detail page renders distro name'
+);
+assert(
+  slashDistroHtml.includes('← All distros') || slashDistroHtml.includes('All distros'),
+  'slash-named distro detail page has back link'
+);
+
+// Index must also link to the slash-named distro's detail page
+assert(
+  indexHtml.includes('href="/dpod-seed/registry/y4n/backend-python-base/"'),
+  'index card links to slash-named distro detail page'
+);
+
 if (failures > 0) {
   console.error(`\n${failures} assertion(s) failed.`);
   process.exit(1);

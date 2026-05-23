@@ -1,3 +1,24 @@
 {
-  "distros": []
+  "distros": [
+    {
+      "name": "devops-k8s",
+      "description": "Kubernetes development environment",
+      "latestTag": "v0.2.0",
+      "status": "stable",
+      "changelogUrl": "https://example.com/changelog",
+      "packages": [
+        { "name": "shell-zsh", "version": "v1.3.0" },
+        { "name": "k8s-tools", "version": "v1.1.0" }
+      ]
+    },
+    {
+      "name": "y4n/backend-python-base",
+      "description": "Python backend development environment",
+      "latestTag": "v0.1.0",
+      "status": "experimental",
+      "packages": [
+        { "name": "python", "version": "v3.12.0" }
+      ]
+    }
+  ]
 }
