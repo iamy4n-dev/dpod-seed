@@ -89,6 +89,16 @@ assert(
   'detail page has GitHub source link'
 );
 
+// --- XSS and frontmatter safety ---
+assert(
+  !detailHtml.includes('alert('),
+  'README script tags are sanitized (XSS blocked)'
+);
+assert(
+  !detailHtml.includes('title: devops-k8s') && !detailHtml.includes('description: Some meta'),
+  'frontmatter key-value pairs are not rendered'
+);
+
 if (failures > 0) {
   console.error(`\n${failures} assertion(s) failed.`);
   process.exit(1);

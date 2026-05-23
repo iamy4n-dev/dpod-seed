@@ -39,6 +39,25 @@ type distroYAML struct {
 	Packages []string `yaml:"packages"`
 }
 
+// stripFrontmatter removes a leading YAML frontmatter block (---...---) from markdown.
+func stripFrontmatter(s string) string {
+	if !strings.HasPrefix(s, "---") {
+		return s
+	}
+	// Skip the opening ---
+	rest := s[3:]
+	// Require a newline immediately after the opening ---
+	if len(rest) == 0 || rest[0] != '\n' {
+		return s
+	}
+	rest = rest[1:]
+	end := strings.Index(rest, "\n---")
+	if end < 0 {
+		return s
+	}
+	return strings.TrimLeft(rest[end+4:], "\n")
+}
+
 // Generate fetches each distro manifest and writes registry-data.json to w.
 func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writer) error {
 	entries, err := reg.List()
@@ -82,7 +101,7 @@ func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writ
 		if readmeFiles, err := f.Fetch(distroRepo, e.LatestTag, "distros/"+e.Name+"/README.md"); err == nil {
 			for _, file := range readmeFiles {
 				if strings.HasSuffix(file.Path, "README.md") || file.Path == "README.md" {
-					readme = string(file.Content)
+					readme = stripFrontmatter(string(file.Content))
 					break
 				}
 			}
