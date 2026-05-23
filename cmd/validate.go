@@ -53,6 +53,8 @@ func runValidate(configPath string, out io.Writer, r resolver.Resolver) error {
 	return nil
 }
 
+var validateRepoOffline bool
+
 var validateRepoCmd = &cobra.Command{
 	Use:   "repo [path]",
 	Short: "Validate all distros/ or packages/ content in a repository",
@@ -62,12 +64,20 @@ var validateRepoCmd = &cobra.Command{
 		if len(args) == 1 {
 			root = args[0]
 		}
-		return runValidateRepo(root, os.Stdout)
+		hc, _ := hostconfig.Load(hostconfig.DefaultPath())
+		opts := validate.Options{
+			DevcontainerRepo: or(hc.Repos.Devcontainer, defaultDevcontainerRepo),
+			PackagesRepo:     or(hc.Repos.Packages, defaultPackagesRepo),
+		}
+		if !validateRepoOffline {
+			opts.Checker = validate.NewGitHubRefChecker("", http.DefaultClient)
+		}
+		return runValidateRepo(root, os.Stdout, opts)
 	},
 }
 
-func runValidateRepo(root string, out io.Writer) error {
-	errs := validate.Run(root)
+func runValidateRepo(root string, out io.Writer, opts validate.Options) error {
+	errs := validate.RunWithOptions(root, opts)
 	for _, e := range errs {
 		fmt.Fprintln(out, e)
 	}
@@ -88,4 +98,5 @@ func splitDistroPin(pin string) (name, tag string) {
 
 func init() {
 	validateCmd.AddCommand(validateProjectCmd, validateRepoCmd)
+	validateRepoCmd.Flags().BoolVar(&validateRepoOffline, "offline", false, "skip cross-repo reference resolution")
 }

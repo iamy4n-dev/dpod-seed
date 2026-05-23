@@ -10,6 +10,7 @@ import (
 
 	"github.com/iamy4n-dev/dpod-seed/internal/config"
 	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
+	"github.com/iamy4n-dev/dpod-seed/internal/validate"
 )
 
 type mockResolver struct {
@@ -66,7 +67,7 @@ func TestRunValidateRepo_valid(t *testing.T) {
 	os.WriteFile(filepath.Join(dir, "README.md"), []byte("---\nname: \"my-pkg\"\ndescription: \"A pkg\"\nstatus: stable\n---\n\n# my-pkg\n"), 0o644)
 
 	var out bytes.Buffer
-	if err := runValidateRepo(base, &out); err != nil {
+	if err := runValidateRepo(base, &out, validate.Options{Checker: nil}); err != nil {
 		t.Errorf("expected no error, got: %v", err)
 	}
 	if !strings.Contains(out.String(), "OK") {
@@ -84,7 +85,7 @@ func TestRunValidateRepo_invalid(t *testing.T) {
 	os.WriteFile(filepath.Join(dir, "README.md"), []byte("---\nname: \"bad\"\ndescription: \"desc\"\nstatus: stable\n---\n\n# bad\n"), 0o644)
 
 	var out bytes.Buffer
-	if err := runValidateRepo(base, &out); err == nil {
+	if err := runValidateRepo(base, &out, validate.Options{Checker: nil}); err == nil {
 		t.Error("expected error for invalid content")
 	}
 }

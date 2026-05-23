@@ -39,6 +39,68 @@ func Run(root string) []string {
 	return errs
 }
 
+// RunWithOptions is like Run but also performs reference resolution when opts.Checker is non-nil.
+func RunWithOptions(root string, opts Options) []string {
+	distrosDir := root + "/distros"
+	packagesDir := root + "/packages"
+	profilesDir := root + "/profiles"
+
+	hasDistros := dirExists(distrosDir)
+	hasPackages := dirExists(packagesDir)
+	hasProfiles := dirExists(profilesDir)
+
+	if !hasDistros && !hasPackages && !hasProfiles {
+		return []string{fmt.Sprintf("%s: no distros/, packages/, or profiles/ directory found", root)}
+	}
+
+	var errs []string
+	if hasDistros {
+		errs = append(errs, walkDistrosWithOpts(distrosDir, opts)...)
+	}
+	if hasPackages {
+		errs = append(errs, walkAndValidate(packagesDir, PackageDir)...)
+	}
+	if hasProfiles {
+		errs = append(errs, walkAndValidate(profilesDir, ProfileDir)...)
+	}
+	return errs
+}
+
+func walkDistrosWithOpts(root string, opts Options) []string {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return []string{fmt.Sprintf("%s: cannot read directory: %v", root, err)}
+	}
+	var errs []string
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		dir := filepath.Join(root, e.Name())
+		if _, err := os.Stat(filepath.Join(dir, "distro.yaml")); err == nil {
+			errs = append(errs, DistroDirWithOptions(dir, opts)...)
+		} else {
+			errs = append(errs, walkAndValidateWithOpts(dir, opts)...)
+		}
+	}
+	return errs
+}
+
+func walkAndValidateWithOpts(root string, opts Options) []string {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return []string{fmt.Sprintf("%s: cannot read directory: %v", root, err)}
+	}
+	var errs []string
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		errs = append(errs, DistroDirWithOptions(filepath.Join(root, e.Name()), opts)...)
+	}
+	return errs
+}
+
 func dirExists(path string) bool {
 	info, err := os.Stat(path)
 	return err == nil && info.IsDir()
