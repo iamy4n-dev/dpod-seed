@@ -24,7 +24,7 @@ func NewGitHubRefChecker(baseURL string, httpClient *http.Client) RefChecker {
 
 func (c *githubRefChecker) TagExists(repo, tag string) (bool, error) {
 	ownerRepo := strings.TrimPrefix(repo, "github.com/")
-	url := fmt.Sprintf("%s/repos/%s/git/ref/refs/tags/%s", c.baseURL, ownerRepo, tag)
+	url := fmt.Sprintf("%s/repos/%s/git/refs/tags/%s", c.baseURL, ownerRepo, tag)
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
 		return false, fmt.Errorf("check tag %s in %s: %w", tag, repo, err)

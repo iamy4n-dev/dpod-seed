@@ -70,7 +70,7 @@ var validateRepoCmd = &cobra.Command{
 			PackagesRepo:     or(hc.Repos.Packages, defaultPackagesRepo),
 		}
 		if !validateRepoOffline {
-			opts.Checker = validate.NewGitHubRefChecker("", http.DefaultClient)
+			opts.Checker = validate.NewGitHubRefChecker("", authedHTTPClient())
 		}
 		return runValidateRepo(root, os.Stdout, opts)
 	},
