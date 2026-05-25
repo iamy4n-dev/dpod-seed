@@ -43,3 +43,45 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: dpod-seed_${{ matrix.goos }}_${{ matrix.goarch }}
+
+  bump-validator-version:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - repo: iamy4n-dev/packages
+            base: master
+          - repo: iamy4n-dev/distros
+            base: main
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
+
+      - name: Bump .dpod-seed-version
+        env:
+          GH_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ matrix.repo }}
+          BASE: ${{ matrix.base }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="chore/bump-dpod-seed-${TAG}"
+          git checkout -b "$branch"
+          echo "$TAG" > .dpod-seed-version
+          git add .dpod-seed-version
+          git diff --cached --quiet && echo "already up to date" && exit 0
+          git commit -m "chore: bump dpod-seed validator to ${TAG}"
+          git push origin "$branch"
+          gh pr create \
+            --repo "$REPO" \
+            --title "chore: bump dpod-seed validator to ${TAG}" \
+            --body "dpod-seed ${TAG} was released. This PR updates the pinned validator version so CI validates against the current parser rules.
+
+See the [dpod-seed release](https://github.com/iamy4n-dev/dpod-seed/releases/tag/${TAG}) for what changed." \
+            --base "$BASE" \
+            --head "$branch"
