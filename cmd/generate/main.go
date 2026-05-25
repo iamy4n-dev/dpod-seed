@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -52,6 +53,9 @@ func main() {
 }
 
 func run() error {
+	outputPath := flag.String("o", defaultOutputPath, "output file path")
+	flag.Parse()
+
 	hc, _ := hostconfig.Load(hostconfig.DefaultPath())
 	token := os.Getenv("GITHUB_TOKEN")
 
@@ -66,7 +70,7 @@ func run() error {
 		registryURL: firstNonEmpty(hc.RegistryURL, defaultRegistryURL),
 		distroRepo:  firstNonEmpty(hc.Repos.Distro, defaultDistroRepo),
 		githubBase:  "",
-		outputPath:  defaultOutputPath,
+		outputPath:  *outputPath,
 		httpClient:  httpClient,
 	}
 	return runGenerate(cfg)

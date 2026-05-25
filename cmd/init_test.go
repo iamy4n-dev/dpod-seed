@@ -2,22 +2,21 @@ package cmd
 
 import (
 	"bytes"
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/iamy4n-dev/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/generator"
 	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
-// twoDistros is a reusable registry client used across init tests.
-var twoDistros = &mockRegistryClient{
-	entries: []registry.DistroEntry{
-		{Name: "devops-k8s", Description: "K8s tooling", LatestTag: "v1.0.0"},
-		{Name: "frontend-node", Description: "Node.js env", LatestTag: "v0.5.0"},
-	},
+// twoDistros is a reusable distro list used across init tests.
+var twoDistros = []generator.DistroRecord{
+	{Name: "devops-k8s", Description: "K8s tooling", LatestTag: "v1.0.0", Devcontainer: "arch-base@v0.1.0",
+		Packages: []generator.Package{{Name: "k8s-tools", Version: "v1.1.0"}}},
+	{Name: "frontend-node", Description: "Node.js env", LatestTag: "v0.5.0", Devcontainer: "debian-slim@v0.1.0",
+		Packages: []generator.Package{{Name: "node-runtime", Version: "v0.5.0"}}},
 }
 
 // oneFile is a reusable resolver used across init tests.
@@ -133,21 +132,6 @@ func TestRunInit_existingConfigOverwriteConfirmed(t *testing.T) {
 	}
 }
 
-func TestRunInit_registryErrorPropagated(t *testing.T) {
-	dir := t.TempDir()
-	client := &mockRegistryClient{err: errors.New("connection refused")}
-	var out bytes.Buffer
-	err := runInit(strings.NewReader(""), &out, true,
-		filepath.Join(dir, "dpod.yaml"), filepath.Join(dir, "dpod.lock"), dir,
-		client, oneFile)
-	if err == nil {
-		t.Fatal("expected error from registry client")
-	}
-	if !strings.Contains(err.Error(), "connection refused") {
-		t.Errorf("error should propagate registry message, got: %v", err)
-	}
-}
-
 func TestRunInit_happyPath(t *testing.T) {
 	dir := t.TempDir()
 	configPath := filepath.Join(dir, "dpod.yaml")
@@ -165,6 +149,14 @@ func TestRunInit_happyPath(t *testing.T) {
 	outStr := out.String()
 	if !strings.Contains(outStr, "devops-k8s") {
 		t.Errorf("distro list not shown, output: %s", outStr)
+	}
+
+	// review shows devcontainer and packages
+	if !strings.Contains(outStr, "arch-base@v0.1.0") {
+		t.Errorf("review should show devcontainer pin, output: %s", outStr)
+	}
+	if !strings.Contains(outStr, "k8s-tools@v1.1.0") {
+		t.Errorf("review should show package pin, output: %s", outStr)
 	}
 
 	// dpod.yaml written with selected distro
