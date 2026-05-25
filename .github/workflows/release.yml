@@ -77,11 +77,12 @@ jobs:
           git diff --cached --quiet && echo "already up to date" && exit 0
           git commit -m "chore: bump dpod-seed validator to ${TAG}"
           git push origin "$branch"
+          body=$(printf '%s\n\n%s' \
+            "dpod-seed ${TAG} was released. This PR updates the pinned validator version so CI validates against the current parser rules." \
+            "See the [dpod-seed release](https://github.com/iamy4n-dev/dpod-seed/releases/tag/${TAG}) for what changed.")
           gh pr create \
             --repo "$REPO" \
             --title "chore: bump dpod-seed validator to ${TAG}" \
-            --body "dpod-seed ${TAG} was released. This PR updates the pinned validator version so CI validates against the current parser rules.
-
-See the [dpod-seed release](https://github.com/iamy4n-dev/dpod-seed/releases/tag/${TAG}) for what changed." \
+            --body "$body" \
             --base "$BASE" \
             --head "$branch"
