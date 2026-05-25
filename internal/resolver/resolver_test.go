@@ -167,8 +167,8 @@ func TestResolve_overridesAdd(t *testing.T) {
 				{Path: "distro.yaml", Content: []byte("devcontainer: arch-base@v2.0.0\npackages: []\n")},
 			},
 			"github.com/org/devcontainer@v2.0.0:profiles/arch-base": {},
-			// override neovim fetched at the distro tag v1.0.0
-			"github.com/org/packages@v1.0.0:packages/neovim": {
+			// override neovim fetched at its explicitly pinned version
+			"github.com/org/packages@v2.0.0:packages/neovim": {
 				{Path: "dotfiles/.config/nvim/init.lua", Content: []byte("neovim config")},
 			},
 		},
@@ -176,7 +176,7 @@ func TestResolve_overridesAdd(t *testing.T) {
 
 	r := resolver.NewResolver(f, repos)
 	overrides := config.Overrides{
-		Packages: config.PackageOverrides{Add: []string{"neovim"}},
+		Packages: config.PackageOverrides{Add: []string{"neovim@v2.0.0"}},
 	}
 	entries, err := r.Resolve("myos", "v1.0.0", overrides)
 	if err != nil {
@@ -186,8 +186,31 @@ func TestResolve_overridesAdd(t *testing.T) {
 	if nvimEntry == nil {
 		t.Fatalf("missing neovim entry")
 	}
-	if nvimEntry.SHA != "v1.0.0" {
-		t.Errorf("SHA = %q, want v1.0.0 (distro tag)", nvimEntry.SHA)
+	if nvimEntry.SHA != "v2.0.0" {
+		t.Errorf("SHA = %q, want v2.0.0 (explicit pin)", nvimEntry.SHA)
+	}
+}
+
+func TestResolve_overridesAdd_requiresExplicitPin(t *testing.T) {
+	f := &mockFetcher{
+		responses: map[string][]fetch.File{
+			"github.com/org/distros@v1.0.0:distros/myos": {
+				{Path: "distro.yaml", Content: []byte("devcontainer: arch-base@v2.0.0\npackages: []\n")},
+			},
+			"github.com/org/devcontainer@v2.0.0:profiles/arch-base": {},
+		},
+	}
+
+	r := resolver.NewResolver(f, repos)
+	overrides := config.Overrides{
+		Packages: config.PackageOverrides{Add: []string{"neovim"}},
+	}
+	_, err := r.Resolve("myos", "v1.0.0", overrides)
+	if err == nil {
+		t.Fatal("expected error for missing version pin in overrides.add")
+	}
+	if !strings.Contains(err.Error(), "version pin") {
+		t.Errorf("error should mention version pin, got: %v", err)
 	}
 }
 

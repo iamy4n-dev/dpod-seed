@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/iamy4n-dev/dpod-seed/internal/registry"
+	"github.com/iamy4n-dev/dpod-seed/internal/generator"
 	"github.com/iamy4n-dev/dpod-seed/internal/resolver"
 )
 
@@ -18,16 +18,18 @@ func TestSmoke_InitSyncValidatePipeline(t *testing.T) {
 	configPath := filepath.Join(dir, "dpod.yaml")
 	lockPath := filepath.Join(dir, "dpod.lock")
 
-	reg := &mockRegistryClient{entries: []registry.DistroEntry{
-		{Name: "example", Description: "placeholder", LatestTag: "v0.1.0"},
-	}}
+	distros := []generator.DistroRecord{
+		{Name: "example", Description: "placeholder", LatestTag: "v0.1.0",
+			Devcontainer: "arch-base@v0.1.0",
+			Packages:     []generator.Package{{Name: "cli-essentials", Version: "v0.1.0"}}},
+	}
 	res := &mockResolver{entries: []resolver.ManifestEntry{
 		{DestPath: ".devcontainer/devcontainer.json", SrcRepo: "github.com/x/dc", SHA: "abc123", Content: []byte(`{}`)},
 	}}
 
 	// --- init: select distro 1, confirm ---
 	var out bytes.Buffer
-	err := runInit(strings.NewReader("1\ny\n"), &out, true, configPath, lockPath, dir, reg, res)
+	err := runInit(strings.NewReader("1\ny\n"), &out, true, configPath, lockPath, dir, distros, res)
 	if err != nil {
 		t.Fatalf("runInit: %v", err)
 	}

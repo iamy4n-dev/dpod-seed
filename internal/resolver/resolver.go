@@ -70,9 +70,13 @@ func (r *resolverImpl) Resolve(distroName, tag string, overrides config.Override
 		entries = append(entries, pkgEntries...)
 	}
 
-	// overrides.add — use the distro tag as the ref
-	for _, name := range overrides.Packages.Add {
-		pkgEntries, err := r.resolvePackage(name, tag)
+	// overrides.add — each entry must carry an explicit version pin (name@tag).
+	for _, pin := range overrides.Packages.Add {
+		name, sha := splitPin(pin)
+		if sha == "" {
+			return nil, fmt.Errorf("overrides.add entry %q must include a version pin, e.g. %s@<tag>", pin, pin)
+		}
+		pkgEntries, err := r.resolvePackage(name, sha)
 		if err != nil {
 			return nil, err
 		}

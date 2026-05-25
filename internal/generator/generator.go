@@ -25,6 +25,7 @@ type DistroRecord struct {
 	LatestTag    string    `json:"latestTag"`
 	Status       string    `json:"status"`
 	ChangelogURL string    `json:"changelogUrl,omitempty"`
+	Devcontainer string    `json:"devcontainer,omitempty"`
 	Packages     []Package `json:"packages"`
 	Readme       string    `json:"readme,omitempty"`
 	SourceURL    string    `json:"sourceUrl,omitempty"`
@@ -36,7 +37,8 @@ type Output struct {
 }
 
 type distroYAML struct {
-	Packages []string `yaml:"packages"`
+	Devcontainer string   `yaml:"devcontainer"`
+	Packages     []string `yaml:"packages"`
 }
 
 // stripFrontmatter removes a leading YAML frontmatter block (---...---) from markdown.
@@ -113,6 +115,7 @@ func Generate(reg registry.Client, f fetch.Fetcher, distroRepo string, w io.Writ
 			LatestTag:    e.LatestTag,
 			Status:       e.Status,
 			ChangelogURL: e.ChangelogURL,
+			Devcontainer: d.Devcontainer,
 			Packages:     pkgs,
 			Readme:       readme,
 			SourceURL:    sourceURL,
